@@ -19,6 +19,14 @@ namespace ProductManagementSystem.DAL.Repositories.Implementations
             var table = new DataTable();
             table.Columns.Add("Id", typeof(int));
 
+            if (categoryIds != null)
+            {
+                foreach (var categoryId in categoryIds)
+                {
+                    table.Rows.Add(categoryId);
+                }
+            }
+
             var productIdParam = new SqlParameter("@ProductId", productId);
 
             var categoryIdsParam = new SqlParameter("@CategoryIds", table)
@@ -28,11 +36,12 @@ namespace ProductManagementSystem.DAL.Repositories.Implementations
             };
 
             await _context.Database.ExecuteSqlRawAsync(
-                "EXEC usp_Product_SyncCategories @ProductId, @CategoryIds",
+                "EXEC usp_Product_ModifyCategories @ProductId, @CategoryIds",
                 productIdParam,
                 categoryIdsParam
             );
         }
+
     }
 
 }

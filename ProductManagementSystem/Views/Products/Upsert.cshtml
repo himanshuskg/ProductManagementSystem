@@ -1,40 +1,225 @@
 ﻿@using ProductManagementSystem.BAL.DTOs.Products
 @model ProductUpsertDto
 
-<h2>@(Model.ProductId == null ? "Create Product" : "Edit Product")</h2>
+@{
+    var isEdit = Model.ProductId > 0;
+    ViewData["Title"] = isEdit ? "Edit Product" : "Create Product";
+}
 
-<form asp-action="Save" method="post">
-    <input type="hidden" asp-for="ProductId" />
-
-    <div class="mb-2">
-        <label>Product Name</label>
-        <input asp-for="ProductName" class="form-control" />
+<div class="container-fluid px-4 py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark m-0">@ViewData["Title"]</h2>
+            <p class="text-muted mb-0 small">@(isEdit ? "Update existing product details" : "Add a new product to inventory")</p>
+        </div>
+        <a asp-action="Index" class="btn btn-outline-secondary shadow-sm px-4">
+            <i class="bi bi-arrow-left me-2"></i>Back to List
+        </a>
     </div>
 
-    <div class="mb-2">
-        <label>Description</label>
-        <textarea asp-for="Description" class="form-control"></textarea>
-    </div>
+    <form asp-action="Save" method="post" id="upsertForm">
+        <input type="hidden" asp-for="ProductId" />
 
-    <div class="mb-2">
-        <label>Quantity</label>
-        <input asp-for="Quantity" type="number" min="0" class="form-control" />
-    </div>
+        <div class="card shadow-sm border-0 rounded-3">
+            <div class="card-body p-4">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <label asp-for="ProductName" class="form-label fw-bold text-secondary small">
+                            PRODUCT NAME <span class="text-danger">*</span>
+                        </label>
+                        <input asp-for="ProductName" class="form-control shadow-none border-2" />
+                        <span asp-validation-for="ProductName" class="text-danger small"></span>
+                    </div>
 
-    <div class="mb-2">
-        <label>Price</label>
-        <input asp-for="Price" type="number" min="0" step="0.01" class="form-control" />
-    </div>
+                    <div class="col-md-3">
+                        <label asp-for="Price" class="form-label fw-bold text-secondary small">
+                            PRICE (₹) <span class="text-danger">*</span>
+                        </label>
+                        <input type="number" step="0.01" asp-for="Price" class="form-control shadow-none border-2 numeric-auto-clear" />
+                        <span asp-validation-for="Price" class="text-danger small"></span>
+                    </div>
 
-    <div class="mb-3">
-        <label>Categories</label>
-        <select asp-for="SelectedCategoryIds"
-                asp-items="@(new MultiSelectList(Model.Categories, "CategoryId", "CategoryName"))"
-                multiple
-                class="form-control">
-        </select>
-    </div>
+                    <div class="col-md-3">
+                        <label asp-for="Quantity" class="form-label fw-bold text-secondary small">
+                            QUANTITY <span class="text-danger">*</span>
+                        </label>
+                        <input type="number" asp-for="Quantity" class="form-control shadow-none border-2 numeric-auto-clear" />
+                        <span asp-validation-for="Quantity" class="text-danger small"></span>
+                    </div>
 
-    <button class="btn btn-primary">Save</button>
-    <a href="/products" class="btn btn-secondary">Cancel</a>
-</form>
+                    <div class="col-12">
+                        <label asp-for="Description" class="form-label fw-bold text-secondary small">
+                            DESCRIPTION <span class="text-danger">*</span>
+                        </label>
+                        <textarea asp-for="Description" rows="3" class="form-control shadow-none border-2"></textarea>
+                        <span asp-validation-for="Description" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label fw-bold text-secondary small">
+                            CATEGORIES <span class="text-danger">*</span>
+                        </label>
+                        <div class="dropdown custom-dropdown-wrapper">
+                            <button class="btn btn-white border-2 w-100 text-start d-flex justify-content-between align-items-center shadow-none p-2"
+                                    type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" id="mainDropBtn">
+                                <span id="selectedCountText" class="text-muted">Select categories...</span>
+                                <i class="bi bi-chevron-down small text-muted"></i>
+                            </button>
+
+                            <div class="dropdown-menu shadow-lg w-100 p-0 overflow-hidden">
+                                <div class="bg-white p-3 sticky-top border-bottom">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="input-group input-group-sm flex-grow-1">
+                                            <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                                            <input type="text" id="catSearch" class="form-control border-start-0 shadow-none" placeholder="Search..." onkeyup="filterCats()">
+                                        </div>
+                                        <button type="button" class="btn-close shadow-none p-2" id="closeDropdownBtn"></button>
+                                    </div>
+                                </div>
+
+                                <div id="catItems" class="p-2 overflow-auto" style="max-height: 250px;">
+                                    @if (Model.Categories != null && Model.Categories.Any())
+                                    {
+                                        for (int i = 0; i < Model.Categories.Count; i++)
+                                        {
+                                            <div class="cat-option p-1">
+                                                <div class="form-check rounded p-2 ps-5 transition-bg">
+                                                    <input class="form-check-input cat-check mt-1" type="checkbox"
+                                                           name="SelectedCategoryIds"
+                                                           value="@Model.Categories[i].CategoryId"
+                                                           id="drop_@Model.Categories[i].CategoryId"
+                                                           onchange="updateSelectionUI()"
+                                                           @(Model.SelectedCategoryIds != null && Model.SelectedCategoryIds.Contains(Model.Categories[i].CategoryId) ? "checked" : "")>
+                                                    <label class="form-check-label w-100 cursor-pointer d-block" for="drop_@Model.Categories[i].CategoryId">
+                                                        @Model.Categories[i].CategoryName
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <div class="p-3 text-center text-muted small">No categories available.</div>
+                                    }
+                                </div>
+
+                                <div class="bg-light p-2 sticky-bottom border-top text-center">
+                                    <small id="footerCountText" class="text-primary fw-bold">0 Selected</small>
+                                </div>
+                            </div>
+                        </div>
+                        <span asp-validation-for="SelectedCategoryIds" class="text-danger small"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer bg-white p-4 d-flex justify-content-end gap-2 border-0">
+                <a asp-action="Index" class="btn btn-link text-muted text-decoration-none fw-bold me-2">Cancel</a>
+                <button type="submit" class="btn @(isEdit ? "btn-primary" : "btn-success") px-5 py-2 fw-bold shadow-sm rounded-pill">
+                    @(isEdit ? "Update Changes" : "Save Product")
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function filterCats() {
+            let val = document.getElementById('catSearch').value.toLowerCase();
+            let options = document.getElementsByClassName('cat-option');
+            for (let i = 0; i < options.length; i++) {
+                let text = options[i].innerText.toLowerCase();
+                options[i].style.display = text.includes(val) ? "block" : "none";
+            }
+        }
+
+        function updateSelectionUI() {
+            let checkedItems = document.querySelectorAll('.cat-check:checked');
+            let count = checkedItems.length;
+            document.getElementById('footerCountText').innerText = count + " Selected";
+            document.getElementById('selectedCountText').innerText = count === 0 ? "Select categories..." : count + " Categories Selected";
+            document.getElementById('mainDropBtn').style.borderColor = count > 0 ? "#0d6efd" : "#dee2e6";
+        }
+
+        $(document).ready(function() {
+            updateSelectionUI();
+
+            // Zero-clearing logic
+            $(".numeric-auto-clear").on("focus", function() {
+                if ($(this).val() == "0") $(this).val("");
+            });
+            $(".numeric-auto-clear").on("blur", function() {
+                if ($(this).val() === "") $(this).val("0");
+            });
+
+            // Prevent closing when clicking inside checkboxes or search
+            $('.dropdown-menu').on('click', function(e) {
+                e.stopPropagation();
+            });
+
+            // Manual Close Button
+            $('#closeDropdownBtn').on('click', function() {
+                var dropdownBtn = document.getElementById('mainDropBtn');
+                bootstrap.Dropdown.getOrCreateInstance(dropdownBtn).hide();
+            });
+        });
+    </script>
+
+    <style>
+        .custom-dropdown-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .dropdown-menu {
+            width: 100%;
+            position: absolute !important;
+            border-radius: 8px;
+            z-index: 1050;
+        }
+
+        .cursor-pointer {
+            cursor: pointer;
+        }
+
+        .transition-bg {
+            transition: background 0.2s;
+        }
+
+        .form-check:hover {
+            background-color: #f0f7ff;
+        }
+
+        .cat-check:checked + .form-check-label {
+            color: #0d6efd;
+            font-weight: bold;
+        }
+
+        .sticky-top, .sticky-bottom {
+            z-index: 1020;
+            background: white !important;
+        }
+
+        #catItems::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #catItems::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 10px;
+        }
+
+        .btn-white {
+            background-color: #fff;
+            border-color: #dee2e6;
+        }
+
+        .text-danger.small {
+            font-size: 0.8rem;
+            margin-top: 4px;
+            display: block;
+        }
+    </style>
+}

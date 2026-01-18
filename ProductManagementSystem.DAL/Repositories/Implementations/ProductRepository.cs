@@ -21,7 +21,10 @@ namespace ProductManagementSystem.DAL.Repositories.Implementations
             return _context.Products.Include(p => p.ProductCategories)
                                     .ThenInclude(pc => pc.Category).AsNoTracking();
         }
-
+        public IQueryable<ProductEntity> AsQueryable()
+        {
+            return _context.Products.AsNoTracking();
+        }
         public async Task<ProductEntity?> GetByIdAsync(int id)
         {
             return await _context.Products.FirstOrDefaultAsync(p => p.ProductId == id);

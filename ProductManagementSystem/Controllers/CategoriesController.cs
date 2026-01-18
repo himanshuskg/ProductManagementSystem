@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProductManagementSystem.BAL.DTOs.Category;
 using ProductManagementSystem.BAL.Interfaces;
+using ProductManagementSystem.BAL.Services;
 
 namespace ProductManagementSystem.Controllers
 {
@@ -31,11 +32,13 @@ namespace ProductManagementSystem.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> Create(CategoryDto dto)
         {
-            if (!ModelState.IsValid)
-                return View(dto);
-
-            await _categoryService.AddAsync(dto);
-            return RedirectToAction(nameof(Index));
+            if (ModelState.IsValid)
+            {
+                await _categoryService.AddAsync(dto);
+                TempData["Message"] = $"Category <strong>{dto.CategoryName}</strong> created successfully!";
+                return RedirectToAction(nameof(Index));
+            }
+            return View(dto);
         }
 
         [HttpGet("edit/{id}")]
@@ -48,22 +51,41 @@ namespace ProductManagementSystem.Controllers
             return View(category);
         }
 
-        [HttpPost("edit")]
+        [HttpPost("edit/{id?}")] // This allows the ID to be part of the URL
         public async Task<IActionResult> Edit(CategoryDto dto)
         {
-            if (!ModelState.IsValid)
-                return View(dto);
-
-            await _categoryService.UpdateAsync(dto);
-            return RedirectToAction(nameof(Index));
+            if (ModelState.IsValid)
+            {
+                await _categoryService.UpdateAsync(dto);
+                TempData["Message"] = $"Changes to <strong>{dto.CategoryName}</strong> saved successfully.";
+                return RedirectToAction(nameof(Index));
+            }
+            return View(dto);
         }
 
         [HttpGet("delete/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            await _categoryService.DeleteAsync(id);
+            var category = await _categoryService.GetByIdAsync(id);
+            if (category != null)
+            {
+                string deletedName = category.CategoryName;
+                await _categoryService.DeleteAsync(id);
+                TempData["Message"] = $"Category <strong>{deletedName}</strong> has been successfully deleted.";
+            }
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpGet("details/{id}")]
+        public async Task<IActionResult> Details(int id)
+        {
+            var category = await _categoryService.GetCategoryDetailsAsync(id);
+            if (category == null)
+                return NotFound();
+
+            return View(category);
+        }
+
     }
 
 }

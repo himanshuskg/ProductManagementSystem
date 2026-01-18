@@ -38,12 +38,29 @@ namespace ProductManagementSystem.Controllers
         public async Task<IActionResult> Save(ProductUpsertDto dto)
         {
             if (!ModelState.IsValid)
+            {
+                var categoryLookups = await _categoryService.GetLookupAsync();
+                dto.Categories = categoryLookups;
                 return View("Upsert", dto);
+            }
 
-            if (dto.ProductId == null)
-                await _productService.AddAsync(dto);
-            else
-                await _productService.UpdateAsync(dto);
+            try
+            {
+                if (dto.ProductId == null || dto.ProductId == 0)
+                {
+                    await _productService.AddAsync(dto);
+                    TempData["Message"] = $"Product <strong>{dto.ProductName}</strong> has been created successfully!";
+                }
+                else
+                {
+                    await _productService.UpdateAsync(dto);
+                    TempData["Message"] = $"Changes to <strong>{dto.ProductName}</strong> have been saved successfully.";
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "An error occurred while saving the product. Please try again.";
+            }
 
             return RedirectToAction(nameof(Index));
         }
@@ -61,8 +78,25 @@ namespace ProductManagementSystem.Controllers
         [HttpGet("delete/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            await _productService.DeleteAsync(id);
+            var product = await _productService.GetByIdAsync(id);
+            if (product != null)
+            {
+                string deletedName = product.ProductName;
+                await _productService.DeleteAsync(id);
+                TempData["Message"] = $"Success: '{deletedName}' has been removed from the products.";
+            }
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpGet("details/{id}")]
+        public async Task<IActionResult> Details(int id)
+        {
+            var product = await _productService.GetProductDetailsAsync(id);
+            if (product == null)
+                return NotFound();
+
+            return View(product);
+        }
+
     }
 }

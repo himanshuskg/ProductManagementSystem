@@ -2,6 +2,7 @@
 using ProductManagementSystem.DAL.Data;
 using ProductManagementSystem.DAL.Repositories.Interfaces;
 using ProductManagementSystem.DOMAIN.Category;
+using ProductManagementSystem.DOMAIN.Product;
 
 namespace ProductManagementSystem.DAL.Repositories.Implementations
 {
@@ -17,7 +18,11 @@ namespace ProductManagementSystem.DAL.Repositories.Implementations
         {
             return _context.Categories.AsNoTracking();
         }
-
+        public IQueryable<CategoryEntity> AsQueryable()
+        {
+            // Returns the DbSet as an IQueryable for the BAL to consume
+            return _context.Categories.AsNoTracking();
+        }
         public async Task<CategoryEntity?> GetByIdAsync(int categoryId)
         {
             return await _context.Categories.AsNoTracking().FirstOrDefaultAsync(c => c.CategoryId == categoryId);
