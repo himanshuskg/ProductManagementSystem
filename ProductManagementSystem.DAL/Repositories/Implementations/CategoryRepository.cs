@@ -13,9 +13,9 @@ namespace ProductManagementSystem.DAL.Repositories.Implementations
         {
             _context = context;
         }
-        public async Task<List<CategoryEntity>> GetCategoriesAsync()
+        public IQueryable<CategoryEntity> GetQueryable()
         {
-            return await _context.Categories.AsNoTracking().ToListAsync();
+            return _context.Categories.AsNoTracking();
         }
 
         public async Task<CategoryEntity?> GetByIdAsync(int categoryId)
@@ -23,18 +23,18 @@ namespace ProductManagementSystem.DAL.Repositories.Implementations
             return await _context.Categories.AsNoTracking().FirstOrDefaultAsync(c => c.CategoryId == categoryId);
         }
 
-        public async Task AddCategoryAsync(CategoryEntity category)
+        public async Task AddAsync(CategoryEntity category)
         {
             await _context.Database.ExecuteSqlRawAsync("EXEC usp_Category_Insert @p0, @p1",category.CategoryName,category.Description);
         }
 
-        public async Task UpdateCategoryAsync(CategoryEntity category)
+        public async Task UpdateAsync(CategoryEntity category)
         {
             await _context.Database.ExecuteSqlRawAsync("EXEC usp_Category_Update @p0, @p1, @p2", 
                                                         category.CategoryId,category.CategoryName, category.Description);
         }
 
-        public async Task DeleteCategoryAsync(int categoryId)
+        public async Task DeleteAsync(int categoryId)
         {
             await _context.Database.ExecuteSqlRawAsync("EXEC usp_Category_Delete @p0",categoryId);
         }

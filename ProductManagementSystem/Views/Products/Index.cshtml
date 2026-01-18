@@ -1,0 +1,142 @@
+﻿@using ProductManagementSystem.BAL.DTOs.Common
+@using ProductManagementSystem.BAL.DTOs.Products
+@model PagedResultDto<ProductListDto>
+@{
+    ViewData["Title"] = "Products";
+}
+
+<h2>Products</h2>
+
+<form method="get" class="mb-3">
+    <div class="row g-2">
+
+        <div class="col-md-3">
+            <input name="SearchText"
+                   value="@Context.Request.Query["SearchText"]"
+                   class="form-control"
+                   placeholder="Search by name" />
+        </div>
+
+        <div class="col-md-2">
+            <input name="MinQuantity"
+                   type="number"
+                   min="0"
+                   class="form-control"
+                   placeholder="Min Qty"
+                   value="@Context.Request.Query["MinQuantity"]" />
+
+        </div>
+
+        <div class="col-md-2">
+            <input name="MinPrice"
+                   type="number"
+                   min="0"
+                   step="0.01"
+                   class="form-control"
+                   placeholder="Min Price"
+                   value="@Context.Request.Query["MinPrice"]" />
+        </div>
+
+        <div class="col-md-2">
+            <input name="MaxPrice"
+                   type="number"
+                   min="0"
+                   step="0.01"
+                   class="form-control"
+                   placeholder="Max Price"
+                   value="@Context.Request.Query["MaxPrice"]" />
+        </div>
+
+        <div class="col-md-3 d-flex gap-2">
+            <button type="submit" class="btn btn-primary">Search</button>
+
+            <a href="/products" class="btn btn-secondary">Clear</a>
+        </div>
+
+    </div>
+</form>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var p in Model.Items)
+        {
+            <tr>
+                <td>@p.ProductName</td>
+                <td>@p.Quantity</td>
+                <td>@p.Price</td>
+                <td>
+                    <a href="/products/edit/@p.ProductId"
+                       class="btn btn-sm btn-warning">Edit</a>
+
+                    <a href="/products/delete/@p.ProductId"
+                       class="btn btn-sm btn-danger"
+                       onclick="return confirm('Delete product?')">
+                        Delete
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+
+</table>
+
+<a href="/products/create" class="btn btn-success">Add Product</a>
+
+@{
+    int totalPages = (int)Math.Ceiling(
+        (double)Model.TotalCount / Model.PageSize
+    );
+}
+<br />
+<nav>
+    <ul class="pagination">
+       
+        <!-- Previous -->
+        <li class="page-item @(Model.Page == 1 ? "disabled" : "")">
+            <a class="page-link"
+               href="?Page=@(Model.Page - 1)
+               &SearchText=@Context.Request.Query["SearchText"]
+               &MinQuantity=@Context.Request.Query["MinQuantity"]
+               &MinPrice=@Context.Request.Query["MinPrice"]
+               &MaxPrice=@Context.Request.Query["MaxPrice"]">
+                Previous
+            </a>
+        </li>
+
+        <!-- Page Numbers -->
+        @for (int i = 1; i <= totalPages; i++)
+        {
+            <li class="page-item @(i == Model.Page ? "active" : "")">
+                <a class="page-link"
+                   href="?Page=@i
+                       &SearchText=@Context.Request.Query["SearchText"]
+                       &MinQuantity=@Context.Request.Query["MinQuantity"]
+                       &MinPrice=@Context.Request.Query["MinPrice"]
+                       &MaxPrice=@Context.Request.Query["MaxPrice"]">
+                    @i
+                </a>
+            </li>
+        }
+
+        <!-- Next -->
+        <li class="page-item @(Model.Page == totalPages ? "disabled" : "")">
+            <a class="page-link"
+               href="?Page=@(Model.Page + 1)
+               &SearchText=@Context.Request.Query["SearchText"]
+               &MinQuantity=@Context.Request.Query["MinQuantity"]
+               &MinPrice=@Context.Request.Query["MinPrice"]
+               &MaxPrice=@Context.Request.Query["MaxPrice"]">
+                Next
+            </a>
+        </li>
+
+    </ul>
+</nav>

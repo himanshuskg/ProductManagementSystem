@@ -4,9 +4,9 @@ namespace ProductManagementSystem.DAL.Repositories.Interfaces
 {
     public interface IProductRepository
     {
-        Task<List<ProductEntity>> GetProductsAsync();
+        IQueryable<ProductEntity> GetQueryable();
         Task<ProductEntity?> GetByIdAsync(int id);
-        Task AddProductAsync(ProductEntity product);
+        Task<int> AddProductAsync(ProductEntity product);
         Task UpdateProductAsync(ProductEntity product);
         Task DeleteProductAsync(int productId);
     }

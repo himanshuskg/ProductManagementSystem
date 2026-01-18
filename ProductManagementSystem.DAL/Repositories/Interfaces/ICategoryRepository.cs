@@ -4,10 +4,10 @@ namespace ProductManagementSystem.DAL.Repositories.Interfaces
 {
     public interface ICategoryRepository
     {
-        Task<List<CategoryEntity>> GetCategoriesAsync();
+        IQueryable<CategoryEntity> GetQueryable();
         Task<CategoryEntity?> GetByIdAsync(int categoryId);
-        Task AddCategoryAsync(CategoryEntity category);
-        Task UpdateCategoryAsync(CategoryEntity category);
-        Task DeleteCategoryAsync(int categoryId);
+        Task AddAsync(CategoryEntity category);
+        Task UpdateAsync(CategoryEntity category);
+        Task DeleteAsync(int categoryId);
     }
 }

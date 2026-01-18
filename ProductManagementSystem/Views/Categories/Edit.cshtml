@@ -1,0 +1,22 @@
+﻿@using ProductManagementSystem.BAL.DTOs.Category
+@model CategoryDto
+
+<h2>Edit Category</h2>
+
+<form method="post">
+    <input type="hidden" asp-for="CategoryId" />
+
+    <div class="mb-2">
+        <label>Name</label>
+        <input asp-for="CategoryName" class="form-control" />
+        <span asp-validation-for="CategoryName" class="text-danger"></span>
+    </div>
+
+    <div class="mb-2">
+        <label>Description</label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+    </div>
+
+    <button class="btn btn-primary">Update</button>
+    <a href="/categories" class="btn btn-secondary">Cancel</a>
+</form>
