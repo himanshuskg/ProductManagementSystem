@@ -1,15 +1,16 @@
-﻿using ProductManagementSystem.BAL.DTOs.Products;
+﻿using ProductManagementSystem.BAL.DTOs.Common;
+using ProductManagementSystem.BAL.DTOs.Products;
 using ProductManagementSystem.DOMAIN.Product;
 
 namespace ProductManagementSystem.BAL.Interfaces
 {
     public interface IProductService
     {
-        Task<List<ProductEntity>> GetProductsAsync(ProductFilterDto filter);
-        Task AddProductAsync(ProductEntity product);
-        Task UpdateProductAsync(ProductEntity product);
-        Task DeleteProductAsync(int productId);
-        Task AssignCategoryAsync(int productId, int categoryId);
-        Task RemoveCategoryAsync(int productId, int categoryId);
+        Task<PagedResultDto<ProductListDto>> GetProductsAsync(ProductFilterDto filter);
+        Task<ProductEntity?> GetProductAsync(int productId);
+        Task<ProductUpsertDto?> GetUpsertDetailsAsync(int id);
+        Task AddAsync(ProductUpsertDto product);
+        Task UpdateAsync(ProductUpsertDto product);
+        Task DeleteAsync(int productId);
     }
 }

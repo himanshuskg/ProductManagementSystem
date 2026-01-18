@@ -1,12 +1,15 @@
-﻿using ProductManagementSystem.DOMAIN.Category;
+﻿using ProductManagementSystem.BAL.DTOs.Category;
+using ProductManagementSystem.BAL.DTOs.Common;
 
 namespace ProductManagementSystem.BAL.Interfaces
 {
     public interface ICategoryService
     {
-        Task<List<CategoryEntity>> GetCategoriesAsync();
-        Task AddCategoryAsync(CategoryEntity category);
-        Task UpdateCategoryAsync(CategoryEntity category);
-        Task DeleteCategoryAsync(int categoryId);
+        Task<PagedResultDto<CategoryListDto>> GetCategoriesAsync(CategoryFilterDto filter);
+        Task<CategoryDto> GetByIdAsync(int id);
+        Task<List<CategoryLookupDto>> GetLookupAsync();
+        Task AddAsync(CategoryDto category);
+        Task UpdateAsync(CategoryDto category);
+        Task DeleteAsync(int categoryId);
     }
 }

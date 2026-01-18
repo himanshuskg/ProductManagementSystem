@@ -2,7 +2,6 @@
 {
     public interface IProductCategoryRepository
     {
-        Task AddProductCategoryAsync(int productId, int categoryId);
-        Task RemoveProductCategoryAsync(int productId, int categoryId);
+        Task ModifyCategoriesAsync(int productId, List<int> categoryIds);
     }
 }

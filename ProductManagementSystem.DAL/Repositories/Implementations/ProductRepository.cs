@@ -1,7 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using ProductManagementSystem.DAL.Data;
 using ProductManagementSystem.DAL.Repositories.Interfaces;
 using ProductManagementSystem.DOMAIN.Product;
+using System.Data;
 
 namespace ProductManagementSystem.DAL.Repositories.Implementations
 {
@@ -14,11 +16,10 @@ namespace ProductManagementSystem.DAL.Repositories.Implementations
             _context = context;
         }
 
-        public async Task<List<ProductEntity>> GetProductsAsync()
+        public IQueryable<ProductEntity> GetQueryable()
         {
-            return await _context.Products.Include(p => p.ProductCategories)
-                                          .ThenInclude(pc => pc.Category)
-                                          .AsNoTracking().ToListAsync();
+            return _context.Products.Include(p => p.ProductCategories)
+                                    .ThenInclude(pc => pc.Category).AsNoTracking();
         }
 
         public async Task<ProductEntity?> GetByIdAsync(int id)
@@ -26,11 +27,25 @@ namespace ProductManagementSystem.DAL.Repositories.Implementations
             return await _context.Products.FirstOrDefaultAsync(p => p.ProductId == id);
         }
 
-        public async Task AddProductAsync(ProductEntity product)
+        public async Task<int> AddProductAsync(ProductEntity product)
         {
-            await _context.Database.ExecuteSqlRawAsync("EXEC usp_Product_Insert @p0, @p1, @p2, @p3",
-                   product.ProductName, product.Description, product.Quantity, product.Price);
+            var productIdParam = new SqlParameter("@ProductId", SqlDbType.Int)
+            {
+                Direction = ParameterDirection.Output
+            };
+
+            await _context.Database.ExecuteSqlRawAsync(
+                "EXEC usp_Product_Insert @ProductName, @Description, @Quantity, @Price, @ProductId OUTPUT",
+                new SqlParameter("@ProductName", product.ProductName),
+                new SqlParameter("@Description", product.Description),
+                new SqlParameter("@Quantity", product.Quantity),
+                new SqlParameter("@Price", product.Price),
+                productIdParam
+            );
+
+            return (int)productIdParam.Value;
         }
+
         public async Task UpdateProductAsync(ProductEntity product)
         {
             await _context.Database.ExecuteSqlRawAsync("EXEC usp_Product_Update @p0, @p1, @p2, @p3, @p4",
