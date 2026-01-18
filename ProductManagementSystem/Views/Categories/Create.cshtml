@@ -1,20 +1,53 @@
 ﻿@using ProductManagementSystem.BAL.DTOs.Category
 @model CategoryDto
 
-<h2>Create Category</h2>
+@{
+    ViewData["Title"] = "Create Category";
+}
 
-<form method="post">
-    <div class="mb-2">
-        <label>Name</label>
-        <input asp-for="CategoryName" class="form-control" />
-        <span asp-validation-for="CategoryName" class="text-danger"></span>
+<div class="container-fluid px-4 py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark m-0">Create New Category</h2>
+            <p class="text-muted mb-0 small">Define a new classification for your products</p>
+        </div>
+        <a href="/categories" class="k-button k-button-md k-rounded-md k-button-solid k-button-solid-base shadow-sm">
+            <i class="bi bi-arrow-left me-2"></i>Back to List
+        </a>
     </div>
 
-    <div class="mb-2">
-        <label>Description</label>
-        <textarea asp-for="Description" class="form-control"></textarea>
-    </div>
+    <form asp-action="Create" method="post">
+        <div class="custom-card shadow-sm border-0 rounded-3">
+            <div class="card-body p-4">
+                <div class="row g-4">
+                    <div class="col-md-12">
+                        <label asp-for="CategoryName" class="search-label d-block text-uppercase">
+                            Category Name <span class="text-danger">*</span>
+                        </label>
+                        <input asp-for="CategoryName" class="form-control border-2 shadow-none" placeholder="Enter category name..." style="border-color: #f1f5f9;" />
+                        <span asp-validation-for="CategoryName" class="text-danger small fw-bold"></span>
+                    </div>
 
-    <button class="btn btn-primary">Save</button>
-    <a href="/categories" class="btn btn-secondary">Cancel</a>
-</form>
+                    <div class="col-12">
+                        <label asp-for="Description" class="search-label d-block text-uppercase">
+                            Description <span class="text-danger">*</span>
+                        </label>
+                        <textarea asp-for="Description" rows="4" class="form-control border-2 shadow-none" placeholder="Describe the category..." style="border-color: #f1f5f9;"></textarea>
+                        <span asp-validation-for="Description" class="text-danger small fw-bold"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer bg-white p-4 d-flex justify-content-end gap-2 border-0">
+                <a href="/categories" class="k-button k-button-md k-rounded-md k-button-solid k-button-solid-base px-4">Cancel</a>
+                <button type="submit" class="k-button k-button-md k-rounded-md k-button-solid k-button-solid-primary px-5 shadow-sm">
+                    Save Category
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

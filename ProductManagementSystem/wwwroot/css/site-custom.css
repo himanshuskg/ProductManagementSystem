@@ -1,0 +1,130 @@
+﻿/* wwwroot/css/site-custom.css */
+
+/* Global Body & Background */
+body {
+    background-color: #f4f7f9;
+    color: #334155;
+}
+/* Force Rupee formatting for Kendo Numeric Textbox */
+.k-input-prefix {
+    color: #475569;
+    font-weight: bold;
+}
+/* Card Styling */
+.custom-card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    background-color: #fff;
+    margin-bottom: 1.5rem;
+}
+
+/* Modern Table Styling */
+.custom-table thead th {
+    background-color: #f8fafc;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 700;
+    color: #64748b;
+    border-top: none;
+    padding: 1rem;
+}
+
+.custom-table tbody td {
+    padding: 1rem;
+    vertical-align: middle;
+    border-color: #f1f5f9;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.02);
+}
+
+/* Search Bar Alignment Fix */
+.search-form-row {
+    align-items: end;
+}
+
+.search-label {
+    font-weight: 600;
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
+    color: #475569;
+}
+
+/* Kendo Button Overrides for Modern Look */
+.k-button-solid-primary {
+    background-color: #ff6358 !important;
+    border-color: #ff6358 !important;
+}
+
+.k-button-sm {
+    font-size: 0.7rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.3px;
+}
+
+/* Badge Styling */
+.status-badge {
+    padding: 0.5em 1em;
+    font-weight: 500;
+    border-radius: 50rem;
+}
+.product-list-container::-webkit-scrollbar {
+    width: 5px;
+}
+
+.product-list-container::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+.product-list-container::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+/* Dashboard Specific Styles */
+.extra-small {
+    font-size: 0.75rem;
+}
+
+.transition-hover {
+    transition: all 0.2s ease-in-out;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+}
+
+.quick-action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.15s ease-in-out;
+}
+
+    .quick-action-btn:hover {
+        background: #f8fafc;
+        transform: translateX(5px);
+        text-decoration: none; /* Ensures no underline on hover */
+    }
+
+/* Primary/Blue Action Color */
+.border-primary-subtle:hover {
+    border-color: #0d6efd !important;
+}
+
+/* Success/Green Action Color */
+.border-success-subtle:hover {
+    border-color: #198754 !important;
+}
+
+.custom-card {
+    border-radius: 12px;
+}

@@ -1,11 +1,129 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@using ProductManagementSystem.BAL.DTOs.Home
+@model DashboardDto
+
+@{
+    ViewData["Title"] = "System Overview";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <br/>
-    <h3>Product Management System</h3>
-    <br/>
-    <p>Learn more about Product Management System <a href="https://github.com/himanshuskg/ProductManagementSystem/">Github</a>.</p>
+<div class="container-fluid px-4 py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark m-0">Dashboard</h2>
+            <p class="text-muted small m-0">Records and system status</p>
+        </div>
+        <div class="d-none d-md-block">
+            <span class="badge bg-white text-dark border py-2 px-3 shadow-sm">
+                <i class="bi bi-clock me-2 text-primary"></i> @DateTime.Now.ToString("HH:mm") | @DateTime.Now.ToString("dd MMM yyyy")
+            </span>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-xl-4 col-md-6">
+            <a href="/products" class="text-decoration-none">
+                <div class="custom-card dashboard-card p-4 border-0 shadow-sm h-100 border-top border-4 border-primary bg-white transition-hover">
+                    <div class="d-flex align-items-start justify-content-between">
+                        <div>
+                            <p class="text-primary small text-uppercase fw-bold mb-1">Tota
+                                l Products</p>
+                            <h1 class="fw-bold mb-0 text-dark">@Model.TotalProducts</h1>
+                        </div>
+                        <div class="p-3 bg-primary bg-opacity-10 rounded-3">
+                            <i class="bi bi-box-seam fs-3 text-primary"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-2 border-top border-light d-flex justify-content-between align-items-center">
+                        <span class="small fw-bold text-primary">Access Products</span>
+                        <i class="bi bi-arrow-right text-primary"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-xl-4 col-md-6">
+            <a href="/categories" class="text-decoration-none">
+                <div class="custom-card dashboard-card p-4 border-0 shadow-sm h-100 border-top border-4 border-success bg-white transition-hover">
+                    <div class="d-flex align-items-start justify-content-between">
+                        <div>
+                            <p class="text-success small text-uppercase fw-bold mb-1">Total Categories</p>
+                            <h1 class="fw-bold mb-0 text-dark">@Model.TotalCategories</h1>
+                        </div>
+                        <div class="p-3 bg-success bg-opacity-10 rounded-3">
+                            <i class="bi bi-tags fs-3 text-success"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-2 border-top border-light d-flex justify-content-between align-items-center">
+                        <span class="small fw-bold text-success">Access Categories</span>
+                        <i class="bi bi-arrow-right text-success"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-xl-4 col-md-12">
+            <div class="custom-card p-4 border-0 shadow-sm h-100 bg-dark text-white position-relative overflow-hidden" style="background: #1e293b;">
+                <div class="position-relative z-1">
+                    <p class="text-white-50 small text-uppercase fw-bold mb-1">Total Products Valuation</p>
+                    <h1 class="fw-bold mb-0">@Model.TotalProductValue.ToString("C")</h1>
+                    <p class="text-white-50 small mt-2 mb-0">Aggregate value across all stock units</p>
+                </div>
+                <i class="bi bi-currency-dollar position-absolute end-0 bottom-0 me-n3 mb-n3 opacity-10 display-1"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="custom-card p-4 h-100 bg-white border-0 shadow-sm">
+                <div class="d-flex align-items-center mb-4">
+                    <h5 class="fw-bold m-0 text-dark">Actions</h5>
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <a href="/products/create" class="quick-action-btn border-primary-subtle">
+                            <div class="d-flex align-items-center">
+                                <div class="p-2 bg-primary rounded-2 me-3">
+                                    <i class="bi bi-plus-lg text-white"></i>
+                                </div>
+                                <div class="text-start">
+                                    <span class="d-block fw-bold text-dark">Product Entry</span>
+                                    <span class="text-muted extra-small">Add new Product</span>
+                                </div>
+                            </div>
+                            <i class="bi bi-chevron-right text-primary"></i>
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="/categories/create" class="quick-action-btn border-success-subtle">
+                            <div class="d-flex align-items-center">
+                                <div class="p-2 bg-success rounded-2 me-3">
+                                    <i class="bi bi-folder-plus text-white"></i>
+                                </div>
+                                <div class="text-start">
+                                    <span class="d-block fw-bold text-dark">Category Entry</span>
+                                    <span class="text-muted extra-small">Register new Category</span>
+                                </div>
+                            </div>
+                            <i class="bi bi-chevron-right text-success"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="custom-card p-4 h-100 bg-light border-0">
+                <h5 class="fw-bold mb-3 text-dark">Resources</h5>
+                <p class="text-muted small">
+                    Documentation and Full Code for this project are available in the repository.
+                </p>
+                <div class="mt-4">
+                    <a href="https://github.com/himanshuskg/ProductManagementSystem/" target="_blank"
+                       class="btn btn-outline-dark w-100 d-flex align-items-center justify-content-center py-2 fw-bold shadow-sm">
+                        <i class="bi bi-github me-2"></i> Source Repository
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

@@ -1,0 +1,89 @@
+﻿@using ProductManagementSystem.BAL.DTOs.Category
+@model CategoryDetailDto
+
+@{
+    ViewData["Title"] = "Category Details";
+}
+
+<div class="container-fluid px-4 py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark m-0">Category Details</h2>
+            <p class="text-muted mb-0 small">Viewing classification for <strong>@Model.CategoryName</strong></p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="/categories" class="k-button k-button-md k-rounded-md k-button-solid k-button-solid-base shadow-sm px-4">
+                <i class="bi bi-arrow-left me-2"></i>Back to List
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="custom-card h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="p-3 rounded-3 me-3" style="background-color: #f8fafc; border: 1px solid #f1f5f9;">
+                            <i class="bi bi-tag text-secondary fs-3"></i>
+                        </div>
+                        <div>
+                            <span class="search-label d-block mb-0" style="font-size: 0.7rem; text-transform: uppercase;">Category Title</span>
+                            <h3 class="fw-bold text-dark m-0">@Model.CategoryName</h3>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="search-label d-block text-uppercase">Description</label>
+                        <div class="p-3 rounded-3 border" style="background-color: #f8fafc; border-color: #f1f5f9 !important; line-height: 1.6; min-height: 120px;">
+                            @(string.IsNullOrEmpty(Model.Description) ? "No description provided for this category." : Model.Description)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer bg-white border-top-0 p-4 pt-0">
+                    <a href="/categories/edit/@Context.Request.RouteValues["id"]" class="k-button k-button-md k-rounded-md k-button-solid k-button-solid-primary px-4">
+                        <span class="k-button-text">Edit Category</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="custom-card h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center justify-content-between mb-4">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-collection-fill me-2 text-secondary"></i>
+                            <h5 class="fw-bold m-0" style="color: #475569;">Linked Products</h5>
+                        </div>
+                        <span class="badge status-badge bg-light text-dark border">@Model.Products.Count()</span>
+                    </div>
+
+                    <div class="product-list-container" style="max-height: 400px; overflow-y: auto;">
+                        @if (Model.Products != null && Model.Products.Any())
+                        {
+                            <div class="list-group list-group-flush">
+                                @foreach (var p in Model.Products)
+                                {
+                                    <div class="list-group-item px-0 border-color-#f1f5f9">
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi bi-dot text-primary fs-3"></i>
+                                            <span class="text-dark fw-medium">@p</span>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-center py-5 border rounded-3" style="border-style: dashed !important; background-color: #f8fafc;">
+                                <i class="bi bi-box2 text-muted fs-2"></i>
+                                <p class="text-muted small mt-2 mb-0">No products assigned to this category</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

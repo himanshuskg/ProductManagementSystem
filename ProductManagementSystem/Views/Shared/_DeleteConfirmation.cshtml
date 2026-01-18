@@ -1,0 +1,28 @@
+﻿<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-light border-0">
+                <h5 class="modal-title fw-bold text-dark">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center p-4">
+                <i class="bi bi-exclamation-triangle text-danger display-4 mb-3"></i>
+                <p class="mb-0">Are you sure you want to delete <strong id="deleteItemName"></strong>?</p>
+                <p class="text-muted small">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer bg-light border-0 justify-content-center">
+                <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancel</button>
+                <a id="confirmDeleteBtn" href="#" class="btn btn-danger px-4">Delete Now</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openDeleteModal(id, name, deleteUrl) {
+        document.getElementById('deleteItemName').innerText = name;
+        document.getElementById('confirmDeleteBtn').href = deleteUrl + '/' + id;
+        var myModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        myModal.show();
+    }
+</script>

@@ -11,5 +11,6 @@ namespace ProductManagementSystem.BAL.Interfaces
         Task AddAsync(CategoryDto category);
         Task UpdateAsync(CategoryDto category);
         Task DeleteAsync(int categoryId);
+        Task<CategoryDetailDto?> GetCategoryDetailsAsync(int categoryId);
     }
 }

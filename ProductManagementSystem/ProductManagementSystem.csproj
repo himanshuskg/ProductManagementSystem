@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="jQuery" Version="3.7.1" />
+    <PackageReference Include="jQuery" Version="3.6.0" />
     <PackageReference Include="KendoUICore" Version="2025.4.1217" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.23">
       <PrivateAssets>all</PrivateAssets>

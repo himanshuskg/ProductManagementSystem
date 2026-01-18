@@ -2,53 +2,128 @@
 @using ProductManagementSystem.BAL.DTOs.Common
 @model PagedResultDto<CategoryListDto>
 
-<h2>Categories</h2>
-<form method="get" class="mb-3">
-    <div class="row g-2">
-        <div class="col-md-4">
-            <input name="SearchText"
-                   value="@Context.Request.Query["SearchText"]"
-                   class="form-control"
-                   placeholder="Search category" />
-        </div>
-
-        <div class="col-md-3">
-            <button class="btn btn-primary">Search</button>
-            <a href="/categories" class="btn btn-secondary">Clear</a>
-        </div>
-    </div>
-</form>
-
-<a href="/categories/create" class="btn btn-success mb-2">Add Category</a>
-
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var c in Model.Items)
-        {
-            <tr>
-                <td>@c.CategoryName</td>
-                <td>@c.Description</td>
-                <td>
-                    <a href="/categories/edit/@c.CategoryId" class="btn btn-sm btn-warning">Edit</a>
-                    <a href="/categories/delete/@c.CategoryId"
-                       class="btn btn-sm btn-danger"
-                       onclick="return confirm('Delete category?')">Delete</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-
-</table>
 @{
-    int totalPages = (int)Math.Ceiling(
-        (double)Model.TotalCount / Model.PageSize
-    );
+    ViewData["Title"] = "Categories";
 }
 
+<div class="container-fluid px-4 py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark m-0">Category Management</h2>
+            <p class="text-muted small m-0">Manage your Categories</p>
+        </div>
+        <a href="/categories/create" class="k-button k-button-md k-rounded-md k-button-solid k-button-solid-primary shadow-sm">
+            Add New Category
+        </a>
+    </div>
+
+    <div class="custom-card p-4">
+        <form method="get" id="filterForm">
+            <div class="row g-3">
+                <div class="col-md-9">
+                    <label class="search-label">Search Category</label>
+                    <input id="searchText" name="SearchText"
+                           value="@Context.Request.Query["SearchText"]"
+                           class="k-textbox w-100" placeholder="Search by name..." />
+                </div>
+                <div class="col-md-3 d-flex gap-2 align-items-end">
+                    <button type="submit" class="k-button k-button-md k-rounded-md k-button-solid k-button-solid-info flex-grow-1" style="height: 38px;">
+                        Search
+                    </button>
+                    <a href="/categories" class="k-button k-button-md k-rounded-md k-button-solid k-button-solid-base" style="height: 38px;">
+                        Clear
+                    </a>
+                </div>
+            </div>
+
+            <input type="hidden" name="PageSize" value="@Model.PageSize" />
+        </form>
+    </div>
+
+    <div class="custom-card overflow-hidden mt-4">
+        <table class="table custom-table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th class="ps-4">Category Name</th>
+                    <th>Description</th>
+                    <th class="text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var c in Model.Items)
+                {
+                    <tr>
+                        <td class="ps-4 fw-medium text-dark">@c.CategoryName</td>
+                        <td class="text-muted">@c.Description</td>
+                        <td class="text-center">
+                            <div class="d-flex justify-content-center gap-2">
+                                <a href="/categories/edit/@c.CategoryId" class="k-button k-button-sm k-rounded-md k-button-solid k-button-solid-warning">Edit</a>
+                                <a href="/categories/details/@c.CategoryId" class="k-button k-button-sm k-rounded-md k-button-solid k-button-solid-info">Details</a>
+                                <a href="javascript:void(0)" class="k-button k-button-sm k-rounded-md k-button-solid k-button-solid-error"
+                                   onclick="openDeleteModal('@c.CategoryId', '@c.CategoryName', '/categories/delete')">Delete</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <div class="bg-white py-3 px-4 border-top">
+            <div class="row align-items-center">
+
+                <div class="col-md-4 d-flex align-items-center gap-2">
+                    <span class="text-muted small">Show</span>
+                    <select class="form-select form-select-sm shadow-none border-2"
+                            style="width: 80px; border-color: #f1f5f9;"
+                            onchange="updatePageSize(this.value)">
+                        <option value="5" selected="@(Model.PageSize == 5)">5</option>
+                        <option value="10" selected="@(Model.PageSize == 10)">10</option>
+                        <option value="20" selected="@(Model.PageSize == 20)">20</option>
+                        <option value="50" selected="@(Model.PageSize == 50)">50</option>
+                    </select>
+                    <span class="text-muted small">entries</span>
+                </div>
+
+                <div class="col-md-4">
+                    @{
+                        int totalPages = (int)Math.Ceiling((double)Model.TotalCount / Model.PageSize);
+                        if (totalPages < 1) totalPages = 1;
+                    }
+                    <nav>
+                        <ul class="pagination pagination-sm justify-content-center mb-0">
+                            <li class="page-item @(Model.Page == 1 ? "disabled" : "")">
+                                <a class="page-link shadow-none" href="?Page=@(Model.Page - 1)&SearchText=@Context.Request.Query["SearchText"]&PageSize=@Model.PageSize">Previous</a>
+                            </li>
+                            @for (int i = 1; i <= totalPages; i++)
+                            {
+                                <li class="page-item @(i == Model.Page ? "active" : "")">
+                                    <a class="page-link shadow-none" href="?Page=@i&SearchText=@Context.Request.Query["SearchText"]&PageSize=@Model.PageSize">@i</a>
+                                </li>
+                            }
+                            <li class="page-item @(Model.Page >= totalPages ? "disabled" : "")">
+                                <a class="page-link shadow-none" href="?Page=@(Model.Page + 1)&SearchText=@Context.Request.Query["SearchText"]&PageSize=@Model.PageSize">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+
+                <div class="col-md-4 text-end">
+                    <p class="text-muted small mb-0">Showing @Model.Items.Count of @Model.TotalCount entries</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<partial name="_DeleteConfirmation" />
+
+@section Scripts {
+    <script>
+        function updatePageSize(size) {
+            // Get current search text if any
+            const searchText = document.getElementById('searchText').value;
+            // Redirect with new page size and reset to page 1
+            window.location.href = `?Page=1&PageSize=${size}&SearchText=${encodeURIComponent(searchText)}`;
+        }
+    </script>
+}

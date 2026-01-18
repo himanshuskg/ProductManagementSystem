@@ -2,7 +2,6 @@
 using ProductManagementSystem.BAL.DTOs.Category;
 using ProductManagementSystem.BAL.DTOs.Common;
 using ProductManagementSystem.BAL.Interfaces;
-using ProductManagementSystem.DAL.Repositories.Implementations;
 using ProductManagementSystem.DAL.Repositories.Interfaces;
 using ProductManagementSystem.DOMAIN.Category;
 
@@ -91,6 +90,26 @@ namespace ProductManagementSystem.BAL.Services
         public Task DeleteAsync(int categoryId)
         {
             return _categoryRepository.DeleteAsync(categoryId);
+        }
+        public async Task<CategoryDetailDto?> GetCategoryDetailsAsync(int categoryId)
+        {
+            var category = await _categoryRepository.GetQueryable()
+                .Include(c => c.ProductCategories)
+                .ThenInclude(pc => pc.Product)
+                .FirstOrDefaultAsync(c => c.CategoryId == categoryId);
+
+            if (category == null)
+                return null;
+
+            return new CategoryDetailDto
+            {
+                CategoryId = category.CategoryId,
+                CategoryName = category.CategoryName,
+                Description = category.Description,
+                Products = category.ProductCategories
+                    .Select(pc => pc.Product.ProductName)
+                    .ToList()
+            };
         }
     }
 }

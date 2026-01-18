@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Azure.Core;
+using Microsoft.EntityFrameworkCore;
 using ProductManagementSystem.BAL.DTOs.Category;
 using ProductManagementSystem.BAL.DTOs.Common;
+using ProductManagementSystem.BAL.DTOs.Home;
 using ProductManagementSystem.BAL.DTOs.Products;
 using ProductManagementSystem.BAL.Interfaces;
 using ProductManagementSystem.DAL.Repositories.Implementations;
@@ -94,8 +96,31 @@ namespace ProductManagementSystem.BAL.Services
                 Categories = categories
             };
         }
+        public async Task<ProductDetailDto?> GetProductDetailsAsync(int productId)
+        {
+            var product = await _productRepository.GetQueryable()
+                .Include(p => p.ProductCategories)
+                .ThenInclude(pc => pc.Category)
+                .FirstOrDefaultAsync(p => p.ProductId == productId);
 
-        public Task<ProductEntity?> GetProductAsync(int productId)
+            if (product == null)
+                return null;
+
+            return new ProductDetailDto
+            {
+                ProductId = product.ProductId,
+                ProductName = product.ProductName,
+                Description = product.Description,
+                Quantity = product.Quantity,
+                Price = product.Price,
+                Categories = product.ProductCategories
+                    .Select(pc => pc.Category.CategoryName)
+                    .ToList()
+            };
+        }
+
+
+        public Task<ProductEntity?> GetByIdAsync(int productId)
         {
             return _productRepository.GetByIdAsync(productId);
         }
@@ -133,6 +158,17 @@ namespace ProductManagementSystem.BAL.Services
         {
             await _productCategoryRepository.ModifyCategoriesAsync(productId,new List<int>());
             await _productRepository.DeleteProductAsync(productId);
+        }
+        public async Task<DashboardDto?> GetDashboardAsync()
+        {
+            var result = await (from dummy in _productRepository.AsQueryable().Take(1).DefaultIfEmpty()
+                               select new DashboardDto
+                               {
+                                   TotalProducts = _productRepository.AsQueryable().Count(),
+                                   TotalCategories = _categoryRepository.AsQueryable().Count(),
+                                   TotalProductValue = _productRepository.AsQueryable().Sum(p => (decimal?)p.Price * p.Quantity) ?? 0
+                               }).FirstOrDefaultAsync();
+            return result;
         }
     }
 }
